@@ -1,0 +1,25 @@
+trigger:
+- none
+jobs:
+- job: DeployToIISServer
+  displayName: 'Deploy Docker Image to IIS Server'
+pool:
+   name: SelfHostedAgent
+  #  demands:
+  #   - agent.name -equals self-hosted-agent-Rk
+steps:
+  - task: Docker@2
+    displayName: 'Pull Docker Image'
+    inputs:
+      containerRegistry: 'demoContainerReg12'  # Replace with your ACR name
+      repository: 'docker_ravi'  # Replace with your repository name
+      command: 'pull'
+      tags: 'latest'
+
+  - task: Docker@2
+    displayName: 'Run Docker Container on IIS Server'
+    inputs:
+      containerRegistry: 'demoContainerReg12'  # Replace with your ACR name
+      repository: 'docker_ravi'  # Replace with your repository name
+      command: 'run'
+      arguments: '-d -p 80:80 demoContainerReg12/docker_ravi:latest'
