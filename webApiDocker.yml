@@ -8,18 +8,33 @@ pool:
   #  demands:
   #   - agent.name -equals self-hosted-agent-Rk
 steps:
-  - task: Docker@2
-    displayName: 'Pull Docker Image'
-    inputs:
-      containerRegistry: 'containerReg'  # Replace with your ACR name
-      repository: 'docker_ravi'  # Replace with your repository name
-      command: 'pull'
-      tags: 'latest'
+  # - task: Docker@2
+  #   displayName: 'Pull Docker Image'
+  #   inputs:
+  #     containerRegistry: 'containerReg'  # Replace with your ACR name
+  #     repository: 'ravikumar-cybage/WebApi'  # Replace with your repository name
+  #     command: 'pull'
+  #     tags: 'latest'
 
-  - task: Docker@2
-    displayName: 'Run Docker Container on IIS Server'
-    inputs:
-      containerRegistry: 'containerReg'  # Replace with your ACR name
-      repository: 'docker_ravi'  # Replace with your repository name
-      command: 'run'
-      arguments: '-d -p 80:80 demoContainerReg12/docker_ravi:latest'
+      - task: Docker@2
+        inputs:
+          containerRegistry: 'containerReg'  # Use the Docker service connection
+          repository: 'ravikumar-cybage/WebApi'
+          command: 'build'
+          Dockerfile: '**/Dockerfile'
+          tags: 'latest'
+
+      - task: Docker@2
+        inputs:
+          containerRegistry: 'containerReg'  # Use the Docker service connection
+          repository: 'ravikumar-cybage/WebApi'
+          command: 'push'
+          tags: 'latest'
+
+      # - task: AzureCLI@2
+      #   inputs:
+      #     azureSubscription: 'YourAzureSubscription'  # Use your Azure subscription service connection
+      #     scriptType: 'bash'
+      #     scriptLocation: 'inlineScript'
+      #     inlineScript: |
+      #       az container create --resource-group YourResourceGroup --name YourAciName --image YourDockerRegistry/your/repository:latest --cpu 1 --memory 1.5Gi --registry-login-server YourDockerRegistry --registry-username $(ACR_USERNAME) --registry-password $(ACR_PASSWORD)
