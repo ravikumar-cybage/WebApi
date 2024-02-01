@@ -6,7 +6,7 @@ EXPOSE 7138
 EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
-WORKDIR /inetpub/wwwroot
+WORKDIR /src
 COPY ["WebApi/WebApi.csproj", "WebApi/"]
 RUN dotnet restore "WebApi/WebApi.csproj"
 COPY . .
