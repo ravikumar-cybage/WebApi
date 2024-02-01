@@ -1,21 +1,26 @@
-#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
+# Use the official Microsoft ASP.NET runtime as a base image
+FROM mcr.microsoft.com/dotnet/aspnet:6.0-windowsservercore-ltsc2022 AS base
 WORKDIR /app
-EXPOSE 7138
-EXPOSE 443
+EXPOSE 80
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+# Build stage
+FROM mcr.microsoft.com/dotnet/sdk:6.0-windowsservercore-ltsc2022 AS build
 WORKDIR /src
+
+# Copy the project file and restore dependencies
 COPY ["WebApi/WebApi.csproj", "WebApi/"]
 RUN dotnet restore "WebApi/WebApi.csproj"
+
+# Copy the entire project and build
 COPY . .
 WORKDIR "/src/WebApi"
 RUN dotnet build "WebApi.csproj" -c Release -o /app/build
 
+# Publish stage
 FROM build AS publish
 RUN dotnet publish "WebApi.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
+# Final stage
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
