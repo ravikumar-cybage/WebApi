@@ -1,0 +1,38 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- none
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+  - stage: 
+    jobs:
+    - job: 
+      steps:
+      
+     
+          - task: Docker@2
+            inputs:
+              containerRegistry: 'cybage.azurecr.io'
+              repository: 'mis-webapi-service-ravi'
+              command: 'buildAndPush'
+              Dockerfile: '**/Dockerfile'
+            
+          # - task: AzureCLI@2
+          #   displayName: Create ACI instance
+          #   inputs:
+          #     azureSubscription: 'SantajiGCybage.OnMicrosoft.com'
+          #     scriptType: 'bash'
+          #     scriptLocation: 'inlineScript'
+          #     inlineScript: |
+                  
+          #         az container create --resource-group rg-mis-ravi --name mis-finance-svc-rk --image cybage.azurecr.io/mis-finance-service-ravi:33285 --cpu 1 --memory 2 --registry-login-server cybage.azurecr.io --registry-username cybage --registry-password nlNjwPbmHWppU6RTwynN2pHdPdoxi7QPtoDtz8XIiH+ACRBDXKnD --ip-address Public --dns-name-label aci-finance-svcc --ports 80 
+          #          #az container show --resource-group rg-mis-ravi --name mis-fin-svc-rk --query id --output tsv
+          #          #aciResourceId = $(az container show --resource-group rg-mis-ravi --name mis-fin-svc-rk --query id --output tsv)
+          #          #objectId=$(az resource show --id $aciResourceId --query identity.principalId --output tsv)
+          #         az role assignment create --assignee-object-id 198c0f2d-6e13-4414-b929-bec296d72111 --role AcrPull --scope /subscriptions/cb6eeba0-83e4-4942-99f6-d067c299da4a/resourceGroups/rg-mis-ravi/providers/Microsoft.ContainerInstance/containerGroups/mis-finance-svc-rk
