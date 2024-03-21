@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: WebApi
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: WebApi
+  template:
+    metadata:
+      labels:
+        app: WebApi
+    spec:
+      containers:
+      - name: WebApi-container
+        image: democontainerreg12.azurecr.io/webapi:dev
+        ports:
+        - containerPort: 80
