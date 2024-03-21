@@ -1,0 +1,43 @@
+trigger:
+- master  # Or specify the branch you want to trigger the pipeline
+
+pool:
+  vmImage: 'ubuntu-latest'  # Choose the VM image to run the pipeline
+
+steps:
+# - task: Docker@2
+#   displayName: 'Build and Push Docker image'
+#   inputs:
+#     containerRegistry: 'demoContainerReg12'  # Specify your ACR connection name
+#     repository: 'democontainerreg12.azurecr.io/webapi:dev'  # Specify your ACR repository and image name
+#     command: 'Pull'
+#     tags: |
+#       $(Build.BuildId)  # Use build ID as a tag for versioning
+
+- task: KubernetesManifest@0
+  displayName: 'Deploy to AKS'
+  inputs:
+    action: 'deploy'
+    kubernetesServiceConnection: 'AksSvcConnection'  # Specify your AKS connection name
+    namespace: 'default'  # Specify the Kubernetes namespace to deploy to
+    manifests: |
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: WebApi
+      spec:
+        replicas: 3
+        selector:
+          matchLabels:
+            app: WebApi
+        template:
+          metadata:
+            labels:
+              app: WebApi
+          spec:
+            containers:
+            - name: WebApi-container
+              image: 'democontainerreg12.azurecr.io/webapi:dev'  # Use the image from ACR with the build ID tag
+              ports:
+              - containerPort: 80
+    containers: 'WebApi' 
